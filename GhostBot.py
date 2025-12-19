@@ -1,0 +1,230 @@
+##############################
+# GhostBot made 2025
+# GPL-3.0 license 
+# Dependencies:
+# pyautogui, pynput & pygetwindow
+# Version: 0.3
+# Overview: This script 
+##############################
+# python -m PyInstaller --onefile ghostB.py
+
+import pyautogui
+from pynput import keyboard
+import sys
+from threading import Timer
+import random
+import pygetwindow as gw
+import time
+
+interval = 1 # In Seconds
+
+inSetLocationMode = False
+locations = {}
+rt = 0
+
+# Show the how to info
+def main():
+    print("""
+            88                                          88                              
+            88                                  ,d      88                       ,d     
+            88                                  88      88                       88     
+ ,adPPYb,d8 88,dPPYba,   ,adPPYba,  ,adPPYba, MM88MMM   88,dPPYba,   ,adPPYba, MM88MMM  
+a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a  88     
+8b       88 88       88 8b       d8  `"Y8ba,    88      88       d8 8b       d8  88     
+"8a,   ,d88 88       88 "8a,   ,a8" aa    ]8I   88,     88b,   ,a8" "8a,   ,a8"  88,    
+ `"YbbdP"Y8 88       88  `"YbbdP"'  `"YbbdP"'   "Y888   8Y"Ybbd8"'   `"YbbdP"'   "Y888  
+ aa,    ,88                                                                           
+  "Y8bbdP"                           
+    """)
+    print("="*25)
+    print("Version: 0.3")
+    print(" English ")
+    print("="*25)
+    print(" How to use:")
+    print(" - First place all the windows on your screen the way you want them. (it's important not to move them after setting the locations)")
+    print(" - Second Enter location mode (Ctrl + Alt + L) and set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location  ). \n Note: Ghost Bot only clicks the location if the location has the same color as when the location was set.")
+    print(" - When you have all the locations set, Use Ctrl + Alt + G to begin.\n")
+    print(" - Use Ctrl + Alt + C to stop the program. \n")
+    print(" Hotkey list:")
+    print(" Ctrl + Alt + C: Close program\n")
+    print(" Ctrl + Alt + L: Enter set location mode.\n")
+    print(" Ctrl + Alt + S: Save a location (When in set location mode).\n")
+    print(" Ctrl + Alt + X: Exit set location mode.\n")
+    print(" Ctrl + Alt + G: Go at them (i.e start)\n")
+    print("="*50)
+    ###
+    print("="*25)
+    print("Версия: 0.3")
+    print(" Русский ")
+    print("="*25)
+    print(" Как использовать:")
+    print(" - Сначала расположите все окна на экране так, как вам удобно. (Важно не перемещать их после того, как вы определили их местоположение)")
+    print(" - Во-вторых, перейдите в режим определения местоположения. (Ctrl + Alt + L). Укажите одно или несколько мест, наведя курсор мыши на нужное место на экране (используйте Ctrl + Alt + S для сохранения местоположения).")
+    print(" - После того, как вы зададите все местоположения, нажмите Ctrl + Alt + G, чтобы начать.\n")
+    print(" - Для остановки программы используйте сочетание клавиш Ctrl + Alt + C. \n")
+    print(" Список сочетаний клавиш:")
+    print(" Ctrl + Alt + C: Закрыть программу\n")
+    print(" Ctrl + Alt + L: Перейдите в режим настройки мест нажатия на экране.\n")
+    print(" Ctrl + Alt + S: Сохранить местоположение (работает только в режиме выбора местоположения).\n")
+    print(" Ctrl + Alt + X:Выйти из режима выбора местоположения..\n")
+    print(" Ctrl + Alt + G: запустить программу\n")
+    print("="*50)
+
+    # y = True
+    # while y == True:
+    #     x = input("Set interval between clicks (in seconds): Установите интервал между щелчками (в секундах):")
+    # try:
+    #     x = float(x)
+    #     y = False
+    #     interval = x
+    # except:
+    #     print("Must be a number. Должно быть число.")
+
+    # print("Интервальный набор") 
+
+    ###
+
+# Checks to see if the set color is detected in set location
+def checkLocation(X, Y, color):
+    screenshot = pyautogui.screenshot()
+    pic = screenshot.load()
+    #print(str(pic[X,Y]) + " vs " + str(color))
+    if str(pic[X,Y]) == str(color):
+        return True
+    else:
+        return False
+
+def run():
+    total = len(locations)
+    for i in range(0, total):
+        X = locations[i]["X"]
+        Y = locations[i]["Y"]
+        C = locations[i]["color"]
+        shouldClick = True #checkLocation(X, Y, C)
+        if shouldClick == True:
+            # Define the coordinates of the window you want to activate
+            # (e.g., the top-left corner of the window)
+            x_coord = X
+            y_coord = Y
+
+            # Get a list of window objects at the specified coordinates
+            windows_at_location = gw.getWindowsAt(x_coord, y_coord)
+
+            if windows_at_location:
+                # Get the first window in the list (usually the topmost/most relevant one)
+                window_to_activate = windows_at_location[0]
+
+                # Print the title of the window for confirmation
+               # print(f"Activating window: {window_to_activate.title}")
+
+                # Activate the window
+                window_to_activate.activate()
+                
+                # Optional: Wait a moment to observe the change
+                #time.sleep(2)
+            else:
+               # print(f"No window found at coordinates ({x_coord}, {y_coord}).")
+               print("Error (ошибка)")
+
+            #print("Clicked")
+            ran1 = random.randint(1, 10)
+            ran2 = random.randint(1, 10)
+            if random.random() % 2 == 0:
+               print("clicked (нажато): X: " + str(X+ran1) + " Y: " + str(Y+ran2))
+               pyautogui.click(button='left', x=X+ran1, y=Y+ran2)
+            else:
+                print("clicked (нажато): X: " + str(X+ran1) + " Y: " + str(Y+ran2))
+                pyautogui.click(button='left', x=X-ran1, y=Y-ran2)
+
+def getColor(X, Y):
+    screenshot = pyautogui.screenshot()
+    pic = screenshot.load()
+    return pic[X,Y]
+
+def runGhostBot(): # <ctrl>+<alt>+r Run program
+    # Exit Location mode if in it
+    global inSetLocationMode
+    if inSetLocationMode == True:
+        print('Exiting Set location mode... (Выход из режима установки местоположения...)')
+        inSetLocationMode = False
+    # Run program
+    if len(locations) != 0: # Make sure they have at least one location saved
+        print('Starting GhostBot... (Начало)')
+        global rt
+        rt = RepeatedTimer(interval, run) # it auto-starts, no need of rt.start()
+    else:
+        print("You must set at least one location! (Необходимо указать хотя бы одно местоположение!)\n")
+
+def closeProgram(): # <ctrl>+<alt>+c Close program
+    print('Closing GhostBot... (завершение программы)')
+    global rt
+    try: # So it doesn't Error if you close it without starting it
+        rt.stop()
+    except:
+        print("")
+    sys.exit()
+
+def enterLocationMode(): # <ctrl>+<alt>+l Set location mode
+    global inSetLocationMode
+    if inSetLocationMode == False:
+        print('Entering Set location mode... (Включение режима выбора местоположения...)')
+        inSetLocationMode = True
+
+def saveLocation(): # <ctrl>+<alt>+s To save a location (When in set location mode)
+    if inSetLocationMode == True:
+        global locations
+        currentMouseX, currentMouseY = pyautogui.position() # Get the XY position of the mouse.
+        nextLocation = len(locations) # Get number of the next dict key
+        color = getColor(currentMouseX, currentMouseY)
+        update = {nextLocation:{"X": currentMouseX, "Y": currentMouseY, "color": color}} 
+        locations.update({nextLocation:{"X": currentMouseX, "Y": currentMouseY, "color": color}})
+        print('Location saved. Location: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
+        print('Местоположение сохранено. Местоположение: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
+        
+    else:
+        print('Must be in set location mode to save a new location. (Для сохранения нового местоположения необходимо находиться в режиме выбора местоположения.)')
+
+def exitLocationMode(): 
+    global inSetLocationMode
+    if inSetLocationMode == True:
+        print('Exiting Set location mode... (Выход из режима выбора местоположения...)')
+        inSetLocationMode = False
+
+# Timer 
+class RepeatedTimer(object):
+    def __init__(self, interval, function, *args, **kwargs):
+        self._timer     = None
+        self.interval   = interval
+        self.function   = function
+        self.args       = args
+        self.kwargs     = kwargs
+        self.is_running = False
+        self.start()
+    
+    def _run(self):
+        self.is_running = False
+        self.start()
+        self.function(*self.args, **self.kwargs)
+    
+    def start(self):
+        if not self.is_running:
+            self._timer = Timer(self.interval, self._run)
+            self._timer.start()
+            self.is_running = True
+    
+    def stop(self):
+        self._timer.cancel()
+        self.is_running = False
+
+main()
+
+
+# Hotkey handlers
+with keyboard.GlobalHotKeys({
+    '<ctrl>+<alt>+c': closeProgram,
+    '<ctrl>+<alt>+l': enterLocationMode,
+    '<ctrl>+<alt>+g': runGhostBot,
+    '<ctrl>+<alt>+s': saveLocation,
+    '<ctrl>+<alt>+x': exitLocationMode,
+    }) as h:
+    h.join()
