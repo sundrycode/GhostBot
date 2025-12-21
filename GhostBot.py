@@ -3,10 +3,11 @@
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.3
-# Overview: This script 
+# Version: 0.4
+# By sundry Code
 ##############################
-# python -m PyInstaller --onefile ghostB.py
+# Build command:
+# python -m PyInstaller  --icon='ghost-bot-icon.jpg' --onefile ghostB.py
 
 import pyautogui
 from pynput import keyboard
@@ -17,6 +18,7 @@ import pygetwindow as gw
 import time
 
 interval = 1 # In Seconds
+codeVersion = "0.4"
 
 inSetLocationMode = False
 locations = {}
@@ -36,8 +38,7 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
  aa,    ,88                                                                           
   "Y8bbdP"                           
     """)
-    print("="*25)
-    print("Version: 0.3")
+    print(" Version: " + codeVersion)
     print(" English ")
     print("="*25)
     print(" How to use:")
@@ -51,10 +52,10 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
     print(" Ctrl + Alt + S: Save a location (When in set location mode).\n")
     print(" Ctrl + Alt + X: Exit set location mode.\n")
     print(" Ctrl + Alt + G: Go at them (i.e start)\n")
+    print(" Ctrl + Alt + P: Pause Program\n")
     print("="*50)
     ###
-    print("="*25)
-    print("Версия: 0.3")
+    print(" Версия: " + codeVersion)
     print(" Русский ")
     print("="*25)
     print(" Как использовать:")
@@ -68,6 +69,7 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
     print(" Ctrl + Alt + S: Сохранить местоположение (работает только в режиме выбора местоположения).\n")
     print(" Ctrl + Alt + X:Выйти из режима выбора местоположения..\n")
     print(" Ctrl + Alt + G: запустить программу\n")
+    print(" Ctrl + Alt + P: Приостановить программу\n")
     print("="*50)
 
     # y = True
@@ -84,15 +86,15 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
 
     ###
 
-# Checks to see if the set color is detected in set location
-def checkLocation(X, Y, color):
-    screenshot = pyautogui.screenshot()
-    pic = screenshot.load()
-    #print(str(pic[X,Y]) + " vs " + str(color))
-    if str(pic[X,Y]) == str(color):
-        return True
-    else:
-        return False
+# # Checks to see if the set color is detected in set location
+# def checkLocation(X, Y, color):
+#     screenshot = pyautogui.screenshot()
+#     pic = screenshot.load()
+#     #print(str(pic[X,Y]) + " vs " + str(color))
+#     if str(pic[X,Y]) == str(color):
+#         return True
+#     else:
+#         return False
 
 def run():
     total = len(locations)
@@ -100,7 +102,7 @@ def run():
         X = locations[i]["X"]
         Y = locations[i]["Y"]
         C = locations[i]["color"]
-        shouldClick = True #checkLocation(X, Y, C)
+        shouldClick = True #checkLocation(X, Y, C) 
         if shouldClick == True:
             # Define the coordinates of the window you want to activate
             # (e.g., the top-left corner of the window)
@@ -118,15 +120,19 @@ def run():
                # print(f"Activating window: {window_to_activate.title}")
 
                 # Activate the window
-                window_to_activate.activate()
+                try:
+                # Code that might raise an exception
+                    window_to_activate.activate()
+                except Exception as e:
+                    # 'e' is a variable holding the exception instance
+                    print(f"An error occurred: {e}") 
                 
                 # Optional: Wait a moment to observe the change
                 #time.sleep(2)
             else:
-               # print(f"No window found at coordinates ({x_coord}, {y_coord}).")
                print("Error (ошибка)")
-
-            #print("Clicked")
+               print(f"No window found at coordinates ({x_coord}, {y_coord}).")
+              
             ran1 = random.randint(1, 10)
             ran2 = random.randint(1, 10)
             if random.random() % 2 == 0:
@@ -161,8 +167,18 @@ def closeProgram(): # <ctrl>+<alt>+c Close program
     try: # So it doesn't Error if you close it without starting it
         rt.stop()
     except:
-        print("")
+        print("Error")
+        sys.exit()
     sys.exit()
+
+def pauseAll():
+    print('Pausing Program... (Программа приостановлена...)')
+    global rt
+    try: # So it doesn't Error if you close it without starting it
+        rt.stop()
+    except:
+        print("Error")
+        sys.exit()
 
 def enterLocationMode(): # <ctrl>+<alt>+l Set location mode
     global inSetLocationMode
@@ -226,5 +242,6 @@ with keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+g': runGhostBot,
     '<ctrl>+<alt>+s': saveLocation,
     '<ctrl>+<alt>+x': exitLocationMode,
+    '<ctrl>+<alt>+p': pauseAll,
     }) as h:
     h.join()
