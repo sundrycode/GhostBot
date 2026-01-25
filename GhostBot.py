@@ -1,9 +1,9 @@
 ##############################
-# GhostBot made 2025
+# GhostBot made 2026
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.4
+# Version: 0.5
 # By sundry Code
 ##############################
 # Build command:
@@ -18,9 +18,10 @@ import pygetwindow as gw
 import time
 
 interval = 1 # In Seconds
-codeVersion = "0.4"
+codeVersion = "0.5"
 
 inSetLocationMode = False
+inRunningMode = False
 locations = {}
 rt = 0
 
@@ -156,8 +157,11 @@ def runGhostBot(): # <ctrl>+<alt>+r Run program
     # Run program
     if len(locations) != 0: # Make sure they have at least one location saved
         print('Starting GhostBot... (Начало)')
-        global rt
-        rt = RepeatedTimer(interval, run) # it auto-starts, no need of rt.start()
+        global inRunningMode
+        if inRunningMode == False:
+            inRunningMode = True
+            global rt
+            rt = RepeatedTimer(interval, run) # it auto-starts, no need of rt.start()
     else:
         print("You must set at least one location! (Необходимо указать хотя бы одно местоположение!)\n")
 
@@ -176,6 +180,8 @@ def pauseAll():
     global rt
     try: # So it doesn't Error if you close it without starting it
         rt.stop()
+        global inRunningMode
+        inRunningMode = False
     except:
         print("Error")
         sys.exit()
