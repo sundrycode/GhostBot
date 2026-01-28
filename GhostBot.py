@@ -51,7 +51,7 @@ def OptionsMenu():
     elif userinput.lower() in [2, "2"]:
         global interval
         print("\n Current interval: " + str(interval) + " second(s). / Текущий интервал: " + str(interval) + " секунд.")
-        time = input(" Set interval between clicks (in seconds): Установите интервал между щелчками (в секундах): ")
+        time = input(" Set interval between clicks (in seconds, can be decimal): Установите интервал между щелчками (в секундах): ")
         try:
             interval = float(time)
             print(" Interval set to: " + str(interval) + " seconds. / Интервал установлен на: " + str(interval) + " секунд. \n")
@@ -65,6 +65,7 @@ def OptionsMenu():
         print("> Ctrl + Alt + S: Save a location. / Сохранить местоположение")
         print("> Ctrl + Alt + G: Start Program / Начать выполнение")
         print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
+        print("> Ctrl + Alt + R: Reset all saved locations / Сбросить все сохраненные местоположения\n")
 
 def showHowTo():
     print(" Version: " + codeVersion)
@@ -80,6 +81,7 @@ def showHowTo():
     print("> Ctrl + Alt + S: Save a location.")
     print("> Ctrl + Alt + G: Start Program")
     print("> Ctrl + Alt + P: Pause Program")
+    print("> Ctrl + Alt + R: Reset all saved locations. (clears all current saved locations so you can set new ones)")
     print("="*50)
     ###
     print(" Версия: " + codeVersion)
@@ -95,6 +97,7 @@ def showHowTo():
     print("> Ctrl + Alt + S: Сохранить местоположение.")
     print("> Ctrl + Alt + G: запустить программу")
     print("> Ctrl + Alt + P: Приостановить программу")
+    print("> Ctrl + Alt + R: Сбросить все сохраненные местоположения (очищает все текущие сохраненные местоположения, чтобы вы могли установить новые)")
     print("="*50)
     OptionsMenu()
 
@@ -140,11 +143,6 @@ def run():
                 print("clicked (нажато): X: " + str(X+ran1) + " Y: " + str(Y+ran2))
                 pyautogui.click(button='left', x=X-ran1, y=Y-ran2)
 
-def getColor(X, Y):
-    screenshot = pyautogui.screenshot()
-    pic = screenshot.load()
-    return pic[X,Y]
-
 def runGhostBot(): # <ctrl>+<alt>+r Run program
     # Run program
     if len(locations) != 0: # Make sure they have at least one location saved
@@ -185,6 +183,19 @@ def saveLocation(): # <ctrl>+<alt>+s To save a location
     locations.update({nextLocation:{"X": currentMouseX, "Y": currentMouseY}})
     print('Location saved / Местоположение сохранено. Location / Местоположение: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
 
+def resetAllLocations():
+    pauseAll()
+    x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
+    if x.lower() not in ['y', 'yes', 'д', 'да']:
+            global locations
+            locations = {}
+            print(" All saved locations have been reset. / Все сохраненные местоположения были сброшены.")
+            print(" You can now set new locations. / Теперь вы можете установить новые местоположения.\n")
+    else:
+        print(" Cancelled. / Отменено.\n")
+        return
+
+
 # Timer 
 class RepeatedTimer(object):
     def __init__(self, interval, function, *args, **kwargs):
@@ -217,7 +228,7 @@ main()
 # Hotkey handlers
 with keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+c': closeProgram,
-   # '<ctrl>+<alt>+l': enterLocationMode,
+    '<ctrl>+<alt>+r': resetAllLocations,
     '<ctrl>+<alt>+g': runGhostBot,
     '<ctrl>+<alt>+s': saveLocation,
    # '<ctrl>+<alt>+x': exitLocationMode,
