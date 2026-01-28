@@ -3,7 +3,7 @@
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.6
+# Version: 0.7
 # By sundry Code
 ##############################
 # Build command:
@@ -17,9 +17,8 @@ import random
 import pygetwindow as gw
 
 interval = 1 # In Seconds
-codeVersion = "0.6"
+codeVersion = "0.7"
 
-inSetLocationMode = False
 inRunningMode = False
 locations = {}
 rt = 0
@@ -42,7 +41,6 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
     OptionsMenu()
 
 
-
 def OptionsMenu():
     print("- Type 1 to show the guide/how to use. / Введите 1, чтобы показать руководство / как использовать.")
     print("- Type 2 to set the time interval between clicks. / Введите 2, чтобы установить интервал времени между щелчками.")
@@ -62,11 +60,10 @@ def OptionsMenu():
             print( "Must be a number. Должно быть число.")
             OptionsMenu()
     else:
-        print(" Starting program... / Запуск программы...")
+        print(">> Starting program... / Запуск программы...")
         print("> Ctrl + Alt + C: Close program / Закрыть программу")
-        print("> Ctrl + Alt + L: Enter set location mode. / Перейти в режим установки местоположения")
-        print("> Ctrl + Alt + S: Save a location (When in set location mode). / Сохранить местоположение (если вы находитесь в режиме установки местоположения).")
-        print("> Ctrl + Alt + G: Go at them (i.e start) / Начать выполнение")
+        print("> Ctrl + Alt + S: Save a location. / Сохранить местоположение")
+        print("> Ctrl + Alt + G: Start Program / Начать выполнение")
         print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
 
 def showHowTo():
@@ -75,15 +72,13 @@ def showHowTo():
     print("="*25)
     print(" How to use:")
     print(" - First place all the windows on your screen the way you want them. (it's important not to move them after setting the locations)")
-    print(" - Second Enter location mode (Ctrl + Alt + L) and set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location).")
+    print(" - Set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location).")
     print(" - When you have all the locations set, Use Ctrl + Alt + G to begin.")
     print(" - Use Ctrl + Alt + C to stop the program and Ctrl + Alt + P to pause it.")
     print(" Hotkey list:")
     print("> Ctrl + Alt + C: Close program")
-    print("> Ctrl + Alt + L: Enter set location mode.")
-    print("> Ctrl + Alt + S: Save a location (When in set location mode).")
-    print("> Ctrl + Alt + X: Exit set location mode.")
-    print("> Ctrl + Alt + G: Go at them (i.e start)")
+    print("> Ctrl + Alt + S: Save a location.")
+    print("> Ctrl + Alt + G: Start Program")
     print("> Ctrl + Alt + P: Pause Program")
     print("="*50)
     ###
@@ -92,14 +87,12 @@ def showHowTo():
     print("="*25)
     print(" Как использовать:")
     print(" - Сначала расположите все окна на экране так, как вам удобно. (Важно не перемещать их после того, как вы определили их местоположение)")
-    print(" - Во-вторых, перейдите в режим определения местоположения. (Ctrl + Alt + L). Укажите одно или несколько мест, наведя курсор мыши на нужное место на экране (используйте Ctrl + Alt + S для сохранения местоположения).")
+    print(" - Укажите одно или несколько мест, наведя курсор мыши на нужное место на экране (используйте Ctrl + Alt + S для сохранения местоположения).")
     print(" - После того, как вы зададите все местоположения, нажмите Ctrl + Alt + G, чтобы начать.")
     print(" - Для остановки программы используйте сочетание клавиш Ctrl + Alt + C.")
     print(" Список сочетаний клавиш:")
     print("> Ctrl + Alt + C: Закрыть программу")
-    print("> Ctrl + Alt + L: Перейдите в режим настройки мест нажатия на экране.")
-    print("> Ctrl + Alt + S: Сохранить местоположение (работает только в режиме выбора местоположения).")
-    print("> Ctrl + Alt + X:Выйти из режима выбора местоположения.")
+    print("> Ctrl + Alt + S: Сохранить местоположение.")
     print("> Ctrl + Alt + G: запустить программу")
     print("> Ctrl + Alt + P: Приостановить программу")
     print("="*50)
@@ -153,11 +146,6 @@ def getColor(X, Y):
     return pic[X,Y]
 
 def runGhostBot(): # <ctrl>+<alt>+r Run program
-    # Exit Location mode if in it
-    global inSetLocationMode
-    if inSetLocationMode == True:
-        print('Exiting Set location mode... (Выход из режима установки местоположения...)')
-        inSetLocationMode = False
     # Run program
     if len(locations) != 0: # Make sure they have at least one location saved
         print('Starting GhostBot... (Начало)')
@@ -180,7 +168,7 @@ def closeProgram(): # <ctrl>+<alt>+c Close program
     sys.exit()
 
 def pauseAll():
-    print('Pausing Program... (Программа приостановлена...)')
+    print('Pausing Program... / Программа приостановлена...')
     global rt
     try: # So it doesn't Error if you close it without starting it
         rt.stop()
@@ -190,31 +178,12 @@ def pauseAll():
         print("Error")
         sys.exit()
 
-def enterLocationMode(): # <ctrl>+<alt>+l Set location mode
-    global inSetLocationMode
-    if inSetLocationMode == False:
-        print('Entering Set location mode... (Включение режима выбора местоположения...)')
-        inSetLocationMode = True
-
-def saveLocation(): # <ctrl>+<alt>+s To save a location (When in set location mode)
-    if inSetLocationMode == True:
-        global locations
-        currentMouseX, currentMouseY = pyautogui.position() # Get the XY position of the mouse.
-        nextLocation = len(locations) # Get number of the next dict key
-        color = getColor(currentMouseX, currentMouseY)
-        update = {nextLocation:{"X": currentMouseX, "Y": currentMouseY, "color": color}} 
-        locations.update({nextLocation:{"X": currentMouseX, "Y": currentMouseY, "color": color}})
-        print('Location saved. Location: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
-        print('Местоположение сохранено. Местоположение: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
-        
-    else:
-        print('Must be in set location mode to save a new location. (Для сохранения нового местоположения необходимо находиться в режиме выбора местоположения.)')
-
-def exitLocationMode(): 
-    global inSetLocationMode
-    if inSetLocationMode == True:
-        print('Exiting Set location mode... (Выход из режима выбора местоположения...)')
-        inSetLocationMode = False
+def saveLocation(): # <ctrl>+<alt>+s To save a location
+    global locations
+    currentMouseX, currentMouseY = pyautogui.position() # Get the XY position of the mouse.
+    nextLocation = len(locations) # Get number of the next dict key
+    locations.update({nextLocation:{"X": currentMouseX, "Y": currentMouseY}})
+    print('Location saved / Местоположение сохранено. Location / Местоположение: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
 
 # Timer 
 class RepeatedTimer(object):
@@ -248,10 +217,10 @@ main()
 # Hotkey handlers
 with keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+c': closeProgram,
-    '<ctrl>+<alt>+l': enterLocationMode,
+   # '<ctrl>+<alt>+l': enterLocationMode,
     '<ctrl>+<alt>+g': runGhostBot,
     '<ctrl>+<alt>+s': saveLocation,
-    '<ctrl>+<alt>+x': exitLocationMode,
+   # '<ctrl>+<alt>+x': exitLocationMode,
     '<ctrl>+<alt>+p': pauseAll,
     }) as h:
     h.join()
