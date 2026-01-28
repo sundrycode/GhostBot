@@ -1,13 +1,13 @@
 ##############################
-# GhostBot made 2026
+# GhostBot - 2026
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.5
+# Version: 0.6
 # By sundry Code
 ##############################
 # Build command:
-# python -m PyInstaller  --icon='ghost-bot-icon.jpg' --onefile ghostB.py
+# python -m PyInstaller  --icon="ghost-bot-icon.jpg" --onefile ghostB.py
 
 import pyautogui
 from pynput import keyboard
@@ -15,10 +15,9 @@ import sys
 from threading import Timer
 import random
 import pygetwindow as gw
-import time
 
 interval = 1 # In Seconds
-codeVersion = "0.5"
+codeVersion = "0.6"
 
 inSetLocationMode = False
 inRunningMode = False
@@ -40,20 +39,52 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
   "Y8bbdP"                           
     """)
     print(" Version: " + codeVersion)
+    OptionsMenu()
+
+
+
+def OptionsMenu():
+    print("- Type 1 to show the guide/how to use. / Введите 1, чтобы показать руководство / как использовать.")
+    print("- Type 2 to set the time interval between clicks. / Введите 2, чтобы установить интервал времени между щелчками.")
+    print("- Press Enter to start. / Нажмите Enter, чтобы запустить программу.")
+    userinput = input("> ")
+    if userinput.lower() in [1, "1", "show", "show guide", "guide", "how to", "how to use"]:
+        showHowTo()
+    elif userinput.lower() in [2, "2"]:
+        global interval
+        print("\n Current interval: " + str(interval) + " second(s). / Текущий интервал: " + str(interval) + " секунд.")
+        time = input(" Set interval between clicks (in seconds): Установите интервал между щелчками (в секундах): ")
+        try:
+            interval = float(time)
+            print(" Interval set to: " + str(interval) + " seconds. / Интервал установлен на: " + str(interval) + " секунд. \n")
+            OptionsMenu()
+        except:
+            print( "Must be a number. Должно быть число.")
+            OptionsMenu()
+    else:
+        print(" Starting program... / Запуск программы...")
+        print("> Ctrl + Alt + C: Close program / Закрыть программу")
+        print("> Ctrl + Alt + L: Enter set location mode. / Перейти в режим установки местоположения")
+        print("> Ctrl + Alt + S: Save a location (When in set location mode). / Сохранить местоположение (если вы находитесь в режиме установки местоположения).")
+        print("> Ctrl + Alt + G: Go at them (i.e start) / Начать выполнение")
+        print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
+
+def showHowTo():
+    print(" Version: " + codeVersion)
     print(" English ")
     print("="*25)
     print(" How to use:")
     print(" - First place all the windows on your screen the way you want them. (it's important not to move them after setting the locations)")
-    print(" - Second Enter location mode (Ctrl + Alt + L) and set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location  ). \n Note: Ghost Bot only clicks the location if the location has the same color as when the location was set.")
-    print(" - When you have all the locations set, Use Ctrl + Alt + G to begin.\n")
-    print(" - Use Ctrl + Alt + C to stop the program. \n")
+    print(" - Second Enter location mode (Ctrl + Alt + L) and set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location).")
+    print(" - When you have all the locations set, Use Ctrl + Alt + G to begin.")
+    print(" - Use Ctrl + Alt + C to stop the program and Ctrl + Alt + P to pause it.")
     print(" Hotkey list:")
-    print(" Ctrl + Alt + C: Close program\n")
-    print(" Ctrl + Alt + L: Enter set location mode.\n")
-    print(" Ctrl + Alt + S: Save a location (When in set location mode).\n")
-    print(" Ctrl + Alt + X: Exit set location mode.\n")
-    print(" Ctrl + Alt + G: Go at them (i.e start)\n")
-    print(" Ctrl + Alt + P: Pause Program\n")
+    print("> Ctrl + Alt + C: Close program")
+    print("> Ctrl + Alt + L: Enter set location mode.")
+    print("> Ctrl + Alt + S: Save a location (When in set location mode).")
+    print("> Ctrl + Alt + X: Exit set location mode.")
+    print("> Ctrl + Alt + G: Go at them (i.e start)")
+    print("> Ctrl + Alt + P: Pause Program")
     print("="*50)
     ###
     print(" Версия: " + codeVersion)
@@ -62,48 +93,24 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
     print(" Как использовать:")
     print(" - Сначала расположите все окна на экране так, как вам удобно. (Важно не перемещать их после того, как вы определили их местоположение)")
     print(" - Во-вторых, перейдите в режим определения местоположения. (Ctrl + Alt + L). Укажите одно или несколько мест, наведя курсор мыши на нужное место на экране (используйте Ctrl + Alt + S для сохранения местоположения).")
-    print(" - После того, как вы зададите все местоположения, нажмите Ctrl + Alt + G, чтобы начать.\n")
-    print(" - Для остановки программы используйте сочетание клавиш Ctrl + Alt + C. \n")
+    print(" - После того, как вы зададите все местоположения, нажмите Ctrl + Alt + G, чтобы начать.")
+    print(" - Для остановки программы используйте сочетание клавиш Ctrl + Alt + C.")
     print(" Список сочетаний клавиш:")
-    print(" Ctrl + Alt + C: Закрыть программу\n")
-    print(" Ctrl + Alt + L: Перейдите в режим настройки мест нажатия на экране.\n")
-    print(" Ctrl + Alt + S: Сохранить местоположение (работает только в режиме выбора местоположения).\n")
-    print(" Ctrl + Alt + X:Выйти из режима выбора местоположения..\n")
-    print(" Ctrl + Alt + G: запустить программу\n")
-    print(" Ctrl + Alt + P: Приостановить программу\n")
+    print("> Ctrl + Alt + C: Закрыть программу")
+    print("> Ctrl + Alt + L: Перейдите в режим настройки мест нажатия на экране.")
+    print("> Ctrl + Alt + S: Сохранить местоположение (работает только в режиме выбора местоположения).")
+    print("> Ctrl + Alt + X:Выйти из режима выбора местоположения.")
+    print("> Ctrl + Alt + G: запустить программу")
+    print("> Ctrl + Alt + P: Приостановить программу")
     print("="*50)
-
-    # y = True
-    # while y == True:
-    #     x = input("Set interval between clicks (in seconds): Установите интервал между щелчками (в секундах):")
-    # try:
-    #     x = float(x)
-    #     y = False
-    #     interval = x
-    # except:
-    #     print("Must be a number. Должно быть число.")
-
-    # print("Интервальный набор") 
-
-    ###
-
-# # Checks to see if the set color is detected in set location
-# def checkLocation(X, Y, color):
-#     screenshot = pyautogui.screenshot()
-#     pic = screenshot.load()
-#     #print(str(pic[X,Y]) + " vs " + str(color))
-#     if str(pic[X,Y]) == str(color):
-#         return True
-#     else:
-#         return False
+    OptionsMenu()
 
 def run():
     total = len(locations)
     for i in range(0, total):
         X = locations[i]["X"]
         Y = locations[i]["Y"]
-        C = locations[i]["color"]
-        shouldClick = True #checkLocation(X, Y, C) 
+        shouldClick = True 
         if shouldClick == True:
             # Define the coordinates of the window you want to activate
             # (e.g., the top-left corner of the window)
@@ -116,9 +123,6 @@ def run():
             if windows_at_location:
                 # Get the first window in the list (usually the topmost/most relevant one)
                 window_to_activate = windows_at_location[0]
-
-                # Print the title of the window for confirmation
-               # print(f"Activating window: {window_to_activate.title}")
 
                 # Activate the window
                 try:
