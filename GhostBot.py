@@ -3,7 +3,7 @@
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.7
+# Version: 0.8
 # By sundry Code
 ##############################
 # Build command:
@@ -17,7 +17,7 @@ import random
 import pygetwindow as gw
 
 interval = 1 # In Seconds
-codeVersion = "0.7"
+codeVersion = "0.8"
 
 inRunningMode = False
 locations = {}
@@ -160,8 +160,9 @@ def closeProgram(): # <ctrl>+<alt>+c Close program
     global rt
     try: # So it doesn't Error if you close it without starting it
         rt.stop()
-    except:
-        print("Error")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print("Please contact sundry Code for support.")
         sys.exit()
     sys.exit()
 
@@ -172,8 +173,9 @@ def pauseAll():
         rt.stop()
         global inRunningMode
         inRunningMode = False
-    except:
-        print("Error")
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        print("Please contact sundry Code for support.")
         sys.exit()
 
 def saveLocation(): # <ctrl>+<alt>+s To save a location
@@ -186,7 +188,7 @@ def saveLocation(): # <ctrl>+<alt>+s To save a location
 def resetAllLocations():
     pauseAll()
     x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
-    if x.lower() not in ['y', 'yes', 'д', 'да']:
+    if x.lower() in ['y', 'yes', 'д', 'да']:
             global locations
             locations = {}
             print(" All saved locations have been reset. / Все сохраненные местоположения были сброшены.")
@@ -231,7 +233,6 @@ with keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+r': resetAllLocations,
     '<ctrl>+<alt>+g': runGhostBot,
     '<ctrl>+<alt>+s': saveLocation,
-   # '<ctrl>+<alt>+x': exitLocationMode,
     '<ctrl>+<alt>+p': pauseAll,
     }) as h:
     h.join()
