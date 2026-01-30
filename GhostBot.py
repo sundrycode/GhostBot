@@ -3,7 +3,7 @@
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.8
+# Version: 0.9
 # By sundry Code
 ##############################
 # Build command:
@@ -16,8 +16,8 @@ from threading import Timer
 import random
 import pygetwindow as gw
 
-interval = 1 # In Seconds
-codeVersion = "0.8"
+interval = 0.8 # In Seconds
+codeVersion = "0.9"
 
 inRunningMode = False
 locations = {}
@@ -65,7 +65,8 @@ def OptionsMenu():
         print("> Ctrl + Alt + S: Save a location. / Сохранить местоположение")
         print("> Ctrl + Alt + G: Start Program / Начать выполнение")
         print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
-        print("> Ctrl + Alt + R: Reset all saved locations / Сбросить все сохраненные местоположения\n")
+        print("> Ctrl + Alt + R: Reset all saved locations / Сбросить все сохраненные местоположения")
+        print("> Ctrl + Alt + M: Show this menu:  / Ctrl + Alt + M: Показать это меню снова \n")
 
 def showHowTo():
     print(" Version: " + codeVersion)
@@ -82,6 +83,7 @@ def showHowTo():
     print("> Ctrl + Alt + G: Start Program")
     print("> Ctrl + Alt + P: Pause Program")
     print("> Ctrl + Alt + R: Reset all saved locations. (clears all current saved locations so you can set new ones)")
+    print("> Ctrl + Alt + M: Show menu.")
     print("="*50)
     ###
     print(" Версия: " + codeVersion)
@@ -98,6 +100,7 @@ def showHowTo():
     print("> Ctrl + Alt + G: запустить программу")
     print("> Ctrl + Alt + P: Приостановить программу")
     print("> Ctrl + Alt + R: Сбросить все сохраненные местоположения (очищает все текущие сохраненные местоположения, чтобы вы могли установить новые)")
+    print("> Ctrl + Alt + M: Показать меню.")
     print("="*50)
     OptionsMenu()
 
@@ -161,22 +164,42 @@ def closeProgram(): # <ctrl>+<alt>+c Close program
     try: # So it doesn't Error if you close it without starting it
         rt.stop()
     except Exception as e:
-        print(f"An error occurred: {e}")
-        print("Please contact sundry Code for support.")
-        sys.exit()
+        if e == "An error occurred: Error code from Windows: 0 - The operation completed successfully.":
+            return
+        else:
+            print(f"An error occurred: {e}")
+            print("Please contact developer for support if this error persists.")
+            sys.exit()
     sys.exit()
 
-def pauseAll():
-    print('Pausing Program... / Программа приостановлена...')
-    global rt
-    try: # So it doesn't Error if you close it without starting it
-        rt.stop()
-        global inRunningMode
-        inRunningMode = False
-    except Exception as e:
-        print(f"An error occurred: {e}")
-        print("Please contact sundry Code for support.")
-        sys.exit()
+
+def showMenu(): # <ctrl>+<alt>+m Show menu
+    global inRunningMode
+    if inRunningMode == True:
+        print("Cannot show menu while program is running. Pausing program first... / Невозможно показать меню, пока программа работает. Сначала приостановите программу...")
+        pauseAll()
+        OptionsMenu()
+    else:
+        OptionsMenu()
+
+def pauseAll(): # <ctrl>+<alt>+p Pause program
+    global inRunningMode
+    if inRunningMode == False:
+        print("Program is already paused. / Программа уже приостановлена.")
+        return
+    else:
+        print('Pausing Program... / Программа приостановлена...')
+        global rt
+        try: # So it doesn't Error if you close it without starting it
+            rt.stop()
+            inRunningMode = False
+        except Exception as e:
+            if e == "An error occurred: Error code from Windows: 0 - The operation completed successfully.":
+                return
+            else:
+                print(f"An error occurred: {e}")
+                print("Please contact developer for support if this error persists.")
+                sys.exit()
 
 def saveLocation(): # <ctrl>+<alt>+s To save a location
     global locations
@@ -185,7 +208,7 @@ def saveLocation(): # <ctrl>+<alt>+s To save a location
     locations.update({nextLocation:{"X": currentMouseX, "Y": currentMouseY}})
     print('Location saved / Местоположение сохранено. Location / Местоположение: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
 
-def resetAllLocations():
+def resetAllLocations(): # <ctrl>+<alt>+r To reset all saved locations
     pauseAll()
     x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
     if x.lower() in ['y', 'yes', 'д', 'да']:
@@ -234,5 +257,6 @@ with keyboard.GlobalHotKeys({
     '<ctrl>+<alt>+g': runGhostBot,
     '<ctrl>+<alt>+s': saveLocation,
     '<ctrl>+<alt>+p': pauseAll,
+    '<ctrl>+<alt>+m': showMenu
     }) as h:
     h.join()
