@@ -74,7 +74,7 @@ def showHowTo():
     print("="*25)
     print(" How to use:")
     print(" - First place all the windows on your screen the way you want them. (it's important not to move them after setting the locations)")
-    print(" - Set one or more locations by placing you computer  cursor over the place you want it to click (use  Ctrl + Alt + S to save the location).")
+    print(" - Set one or more locations by placing you computer cursor over the place you want it to click (use  Ctrl + Alt + S to save the location).")
     print(" - When you have all the locations set, Use Ctrl + Alt + G to begin.")
     print(" - Use Ctrl + Alt + C to stop the program and Ctrl + Alt + P to pause it.")
     print(" Hotkey list:")
