@@ -13,6 +13,7 @@ import pyautogui
 from pynput import keyboard
 import sys
 from threading import Timer
+import threading
 import random
 import pygetwindow as gw
 
@@ -22,6 +23,7 @@ codeVersion = "0.9"
 inRunningMode = False
 locations = {}
 rt = 0
+menu_open = False  # True while OptionsMenu is active
 
 # Show the how to info
 def main():
@@ -42,31 +44,44 @@ a8"    `Y88 88P'    "8a a8"     "8a I8[    ""   88      88P'    "8a a8"     "8a 
 
 
 def OptionsMenu():
-    print("- Type 1 to show the guide/how to use. / Введите 1, чтобы показать руководство / как использовать.")
-    print("- Type 2 to set the time interval between clicks. / Введите 2, чтобы установить интервал времени между щелчками.")
-    print("- Press Enter to start. / Нажмите Enter, чтобы запустить программу.")
-    userinput = input("> ")
-    if userinput.lower() in [1, "1", "show", "show guide", "guide", "how to", "how to use"]:
-        showHowTo()
-    elif userinput.lower() in [2, "2"]:
-        global interval
-        print("\n Current interval: " + str(interval) + " second(s). / Текущий интервал: " + str(interval) + " секунд.")
-        time = input(" Set interval between clicks (in seconds, can be decimal): Установите интервал между щелчками (в секундах): ")
-        try:
-            interval = float(time)
-            print(" Interval set to: " + str(interval) + " seconds. / Интервал установлен на: " + str(interval) + " секунд. \n")
-            OptionsMenu()
-        except:
-            print( "Must be a number. Должно быть число.")
-            OptionsMenu()
-    else:
-        print(">> Starting program... / Запуск программы...")
-        print("> Ctrl + Alt + C: Close program / Закрыть программу")
-        print("> Ctrl + Alt + S: Save a location. / Сохранить местоположение")
-        print("> Ctrl + Alt + G: Start Program / Начать выполнение")
-        print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
-        print("> Ctrl + Alt + R: Reset all saved locations / Сбросить все сохраненные местоположения")
-        print("> Ctrl + Alt + M: Show this menu:  / Ctrl + Alt + M: Показать это меню снова \n")
+    """Single-entry menu loop. Sets `menu_open` so additional menu requests are ignored while active."""
+    global menu_open
+    if menu_open:
+        return
+    menu_open = True
+    try:
+        while True:
+            print("- Type 1 to show the guide/how to use. / Введите 1, чтобы показать руководство / как использовать.")
+            print("- Type 2 to set the time interval between clicks. / Введите 2, чтобы установить интервал времени между щелчками.")
+            print("- Press Enter to start. / Нажмите Enter, чтобы запустить программу.")
+            userinput = input("> ")
+
+            if userinput.strip().lower() in ["1", "show", "show guide", "guide", "how to", "how to use"]:
+                showHowTo()
+                continue
+
+            elif userinput.strip().lower() in ["2"]:
+                global interval
+                print("\n Current interval: " + str(interval) + " second(s). / Текущий интервал: " + str(interval) + " секунд.")
+                time = input(" Set interval between clicks (in seconds, can be decimal): Установите интервал между щелчками (в секундах): ")
+                try:
+                    interval = float(time)
+                    print(" Interval set to: " + str(interval) + " seconds. / Интервал установлен на: " + str(interval) + " секунд. \n")
+                except:
+                    print( "Must be a number. Должно быть число.")
+                continue
+
+            else:
+                print(">> Starting program... / Запуск программы...")
+                print("> Ctrl + Alt + C: Close program / Закрыть программу")
+                print("> Ctrl + Alt + S: Save a location. / Сохранить местоположение")
+                print("> Ctrl + Alt + G: Start Program / Начать выполнение")
+                print("> Ctrl + Alt + P: Pause Program / Приостановить программу")
+                print("> Ctrl + Alt + R: Reset all saved locations / Сбросить все сохраненные местоположения")
+                print("> Ctrl + Alt + M: Show this menu:  / Ctrl + Alt + M: Показать это меню снова \n")
+                break
+    finally:
+        menu_open = False
 
 def showHowTo():
     print(" Version: " + codeVersion)
@@ -102,7 +117,7 @@ def showHowTo():
     print("> Ctrl + Alt + R: Сбросить все сохраненные местоположения (очищает все текущие сохраненные местоположения, чтобы вы могли установить новые)")
     print("> Ctrl + Alt + M: Показать меню.")
     print("="*50)
-    OptionsMenu()
+    return
 
 def run():
     total = len(locations)
@@ -174,13 +189,17 @@ def closeProgram(): # <ctrl>+<alt>+c Close program
 
 
 def showMenu(): # <ctrl>+<alt>+m Show menu
-    global inRunningMode
+    global inRunningMode, menu_open
+    if menu_open:
+        #print("Menu is already open. / Меню уже открыто.")
+        print("- Type 1 to show the guide/how to use. / Введите 1, чтобы показать руководство / как использовать.")
+        print("- Type 2 to set the time interval between clicks. / Введите 2, чтобы установить интервал времени между щелчками.")
+        print("- Press Enter to start. / Нажмите Enter, чтобы запустить программу.")
+        return
     if inRunningMode == True:
         print("Cannot show menu while program is running. Pausing program first... / Невозможно показать меню, пока программа работает. Сначала приостановите программу...")
         pauseAll()
-        OptionsMenu()
-    else:
-        OptionsMenu()
+    threading.Thread(target=OptionsMenu, daemon=True).start()
 
 def pauseAll(): # <ctrl>+<alt>+p Pause program
     global inRunningMode
@@ -209,16 +228,19 @@ def saveLocation(): # <ctrl>+<alt>+s To save a location
     print('Location saved / Местоположение сохранено. Location / Местоположение: X: ' + str(currentMouseX) + " Y: " + str(currentMouseY)) # tell location && save location
 
 def resetAllLocations(): # <ctrl>+<alt>+r To reset all saved locations
-    pauseAll()
-    x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
-    if x.lower() in ['y', 'yes', 'д', 'да']:
+    # run the blocking prompt in a background thread so the hotkey listener keeps processing key-up events
+    def _reset_worker():
+        pauseAll()
+        x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
+        if x.lower() in ['y', 'yes', 'д', 'да']:
             global locations
             locations = {}
             print(" All saved locations have been reset. / Все сохраненные местоположения были сброшены.")
             print(" You can now set new locations. / Теперь вы можете установить новые местоположения.\n")
-    else:
-        print(" Cancelled. / Отменено.\n")
-        return
+        else:
+            print(" Cancelled. / Отменено.\n")
+            return
+    threading.Thread(target=_reset_worker, daemon=True).start()
 
 
 # Timer 
