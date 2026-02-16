@@ -3,7 +3,7 @@
 # GPL-3.0 license 
 # Dependencies:
 # pyautogui, pynput & pygetwindow
-# Version: 0.9
+# Version: 1.0
 # By sundry Code
 ##############################
 # Build command:
@@ -18,7 +18,7 @@ import random
 import pygetwindow as gw
 
 interval = 0.8 # In Seconds
-codeVersion = "0.9"
+codeVersion = "1.0"
 
 inRunningMode = False
 locations = {}
@@ -230,7 +230,11 @@ def saveLocation(): # <ctrl>+<alt>+s To save a location
 def resetAllLocations(): # <ctrl>+<alt>+r To reset all saved locations
     # run the blocking prompt in a background thread so the hotkey listener keeps processing key-up events
     def _reset_worker():
-        pauseAll()
+        global inRunningMode
+        if inRunningMode == True:
+            pauseAll()
+            return
+
         x = input(" Are you sure you want to reset all saved locations? (y/n): Вы уверены, что хотите сбросить все сохраненные местоположения? (да/нет): ")
         if x.lower() in ['y', 'yes', 'д', 'да']:
             global locations
